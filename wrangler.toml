@@ -3,9 +3,9 @@ main = "worker/index.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
-# 配置自定义域名路由
+# 配置自定义域名
 [[routes]]
-pattern = "jmlt.caoyushen.dpdns.org/*"
+pattern = "jmlt.caoyushen.dpdns.org"
 custom_domain = true
 
 # 配置静态资源
