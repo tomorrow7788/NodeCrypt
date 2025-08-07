@@ -4,6 +4,36 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
+    // === ✅ 访问密码保护开始 ===
+    const protectedPaths = ['/']; // 你可以加多个，比如 ['/','/index','/chat']
+    const isProtected = protectedPaths.some(path => url.pathname.startsWith(path));
+
+    if (isProtected) {
+      const authHeader = request.headers.get('Authorization');
+
+      if (!authHeader || !authHeader.startsWith('Basic ')) {
+        return new Response('🔒 需要身份验证', {
+          status: 401,
+          headers: {
+            'WWW-Authenticate': 'Basic realm="Protected Area"',
+          },
+        });
+      }
+
+      const encoded = authHeader.split(' ')[1];
+      const decoded = atob(encoded);
+      const [username, password] = decoded.split(':');
+
+      if (password !== env.ACCESS_PASSWORD) {
+        return new Response('❌ 密码错误', { status: 403 });
+      }
+    }
+    // === ✅ 访问密码保护结束 ===
+
+    
+
+    
+
     // 处理WebSocket请求
     const upgradeHeader = request.headers.get('Upgrade');
     if (upgradeHeader && upgradeHeader === 'websocket') {
