@@ -5,30 +5,39 @@ export default {
     const url = new URL(request.url);
 
     // === ✅ 访问密码保护开始 ===
-    const protectedPaths = ['/']; // 你可以加多个，比如 ['/','/index','/chat']
-    const isProtected = protectedPaths.some(path => url.pathname.startsWith(path));
 
-    if (isProtected) {
-      const authHeader = request.headers.get('Authorization');
+// 只保护首页路径 '/'
+const protectedPaths = ['/'];
 
-      if (!authHeader || !authHeader.startsWith('Basic ')) {
-        return new Response('🔒 需要身份验证', {
-          status: 401,
-          headers: {
-            'WWW-Authenticate': 'Basic realm="Protected Area"',
-          },
-        });
-      }
+// 这里假设聊天请求路径是 '/chat' 或 '/api/chat'，你可以根据实际情况增删
+const excludedPaths = ['/chat', '/api/chat'];
 
-      const encoded = authHeader.split(' ')[1];
-      const decoded = atob(encoded);
-      const [username, password] = decoded.split(':');
+// 判断是否当前请求需要认证
+const isProtected = protectedPaths.some(path => url.pathname === path)
+                  && !excludedPaths.some(prefix => url.pathname.startsWith(prefix));
 
-      if (password !== env.ACCESS_PASSWORD) {
-        return new Response('❌ 密码错误', { status: 403 });
-      }
-    }
-    // === ✅ 访问密码保护结束 ===
+if (isProtected) {
+  const authHeader = request.headers.get('Authorization');
+
+  if (!authHeader || !authHeader.startsWith('Basic ')) {
+    return new Response('🔒 需要身份验证', {
+      status: 401,
+      headers: {
+        'WWW-Authenticate': 'Basic realm="Protected Area"',
+      },
+    });
+  }
+
+  const encoded = authHeader.split(' ')[1];
+  const decoded = atob(encoded);
+  const [username, password] = decoded.split(':');
+
+  if (password !== env.ACCESS_PASSWORD) {
+    return new Response('❌ 密码错误', { status: 403 });
+  }
+}
+
+// === ✅ 访问密码保护结束 ===
 
     
 
