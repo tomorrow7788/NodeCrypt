@@ -1,11 +1,11 @@
-name = "你的workers名字"
+name = "chatsm"
 main = "worker/index.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 # 配置自定义域名
 [[routes]]
-pattern = "你的域名"
+pattern = "chat.273983.xyz"
 custom_domain = true
 
 # 配置静态资源
